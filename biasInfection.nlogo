@@ -1,6 +1,6 @@
 ;; biasInfection model
 ;; Dario Ghersi and Ishwor Thapa
-;; Last updated: 022823
+;; Last updated: 030323
 
 ;; agent sets
 breed [ humans human ]
@@ -272,13 +272,13 @@ to mosquito-bite-infected
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-676
+628
 13
 1184
-522
+570
 -1
 -1
-15.152
+16.61
 1
 10
 1
@@ -299,10 +299,10 @@ ticks
 30.0
 
 BUTTON
-23
-17
-91
-50
+25
+10
+95
+43
 NIL
 setup
 NIL
@@ -316,10 +316,10 @@ NIL
 1
 
 BUTTON
-22
-72
-89
-105
+140
+10
+210
+43
 go-once
 go
 NIL
@@ -333,10 +333,10 @@ NIL
 1
 
 SLIDER
-131
-161
-303
-194
+323
+130
+612
+163
 bias
 bias
 0
@@ -348,10 +348,10 @@ NIL
 HORIZONTAL
 
 PLOT
-24
-240
-337
-407
+25
+227
+310
+396
 Total Humans Infected
 NIL
 NIL
@@ -366,10 +366,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot count humans with [infected? = true]"
 
 SLIDER
-130
-16
-304
-49
+323
+11
+610
+44
 num-of-individuals
 num-of-individuals
 1
@@ -381,10 +381,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-130
-57
-305
-90
+323
+51
+610
+84
 num-of-mosquitoes
 num-of-mosquitoes
 1
@@ -396,10 +396,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-132
-118
-305
-151
+323
+91
+611
+124
 %-of-infected-at-start
 %-of-infected-at-start
 0
@@ -411,10 +411,10 @@ NIL
 HORIZONTAL
 
 BUTTON
-23
-127
-89
-160
+242
+10
+308
+43
 go
 go
 T
@@ -428,10 +428,10 @@ NIL
 1
 
 SLIDER
-359
-17
-564
+25
 50
+310
+83
 average-sick-time
 average-sick-time
 1
@@ -443,10 +443,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-359
-67
-563
-100
+25
+89
+310
+122
 average-recovery-time
 average-recovery-time
 1
@@ -458,10 +458,10 @@ NIL
 HORIZONTAL
 
 PLOT
-352
-242
-642
-405
+322
+228
+615
+397
 Total Carrier/Exposed Mosquitoes
 NIL
 NIL
@@ -477,10 +477,10 @@ PENS
 "pen-1" 1.0 0 -955883 true "" "plot count mosquitoes with [exposed? = true]"
 
 SLIDER
-358
-116
-561
-149
+25
+127
+310
+160
 average-carrier-time
 average-carrier-time
 1
@@ -492,10 +492,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-128
-201
-300
-234
+323
+170
+613
+203
 human-attractiveness
 human-attractiveness
 0
@@ -507,10 +507,10 @@ NIL
 HORIZONTAL
 
 MONITOR
-23
-423
-244
-468
+323
+524
+540
+569
 # of Infected Humans
 count infected-humans
 0
@@ -518,10 +518,10 @@ count infected-humans
 11
 
 MONITOR
-354
-530
-530
-575
+322
+412
+537
+457
 # of Carrier Mosquitoes
 count mosquitoes with [carrier? = true]
 17
@@ -529,25 +529,25 @@ count mosquitoes with [carrier? = true]
 11
 
 SLIDER
-358
-161
-568
-194
+25
+167
+310
+200
 average-incubation-time
 average-incubation-time
 1
 100
-8.0
+7.0
 1
 1
 NIL
 HORIZONTAL
 
 MONITOR
-354
-473
-529
-518
+323
+470
+538
+515
 # of Mosquitoes in incubation
 count exposed-mosquitoes
 17
@@ -555,10 +555,10 @@ count exposed-mosquitoes
 11
 
 MONITOR
-24
-477
-243
-522
+26
+469
+241
+514
 # of  Humans in full recovery process
 count recovered-humans
 17
@@ -566,10 +566,10 @@ count recovered-humans
 11
 
 MONITOR
-353
-419
-528
-464
+25
+413
+240
+458
 Total Viral Load
 count infected-humans + count carrier-mosquitoes + count exposed-mosquitoes
 17
@@ -577,10 +577,10 @@ count infected-humans + count carrier-mosquitoes + count exposed-mosquitoes
 11
 
 MONITOR
-23
-532
-242
-577
+25
+525
+240
+570
 max-time-before-biting-infected
 [time-elapsed-before-biting-infected] of max-one-of mosquitoes [time-elapsed-before-biting-infected ]
 17
