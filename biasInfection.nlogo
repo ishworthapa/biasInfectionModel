@@ -9,25 +9,31 @@ breed [ mosquitoes mosquito ]
 ;; global variables
 globals [ infected-at-start ]
 
+;; attributes of human agents
 humans-own
 [
   infected?
-  ;;after you are recovered, you can get infected again
+  ;; after an individual is recovered, it can get infected again
   recovered?
-
+  ;; for infected individuals, add sick-time with the tick
   sick-time
+
   recovery-time
   time-sick
   time-recovered
+
   time-elapsed-before-bitten-by-infected
   time-became-susceptible
 ]
 
+;; attributes of mosquito agents
 mosquitoes-own
 [
   exposed?
+  ;; after exposed, incubation time starts
   incubation-time
   time-incubation
+  ;; after incubation, becomes carrier
   carrier?
   carrier-time
   time-carrier
@@ -90,7 +96,7 @@ end
 to setup
   clear-all
   ;; fix the random-seed for reproducibility
-  random-seed behaviorspace-run-number
+  ;random-seed behaviorspace-run-number
   ask patches [ set pcolor gray + 4 ]
   set-default-shape humans "person"
   set-default-shape mosquitoes "bug"
@@ -160,7 +166,7 @@ to go
     set time-carrier time-carrier + 1
   ]
 
-  ;; check if a patient should recover
+  ;; check if a patient should recover (still has immunity)
   ask infected-humans with [ time-sick = sick-time ] [
     set color brown
     set infected? false
@@ -171,7 +177,7 @@ to go
     set time-sick 0
   ]
 
-  ;; check if a patient should become susceptible again
+  ;; check if a patient should become susceptible again (immunity lost)
   ask recovered-humans with [ time-recovered = recovery-time ] [
     set color green
     set recovered? false
@@ -242,6 +248,7 @@ end
 to mosquito-infect-human
   if count humans-here with [infected? = false and recovered? = false] > 0 and
   count mosquitoes-here with [carrier? = true] > 0 [
+    ;; find one who is not infected and not in recovery (meaning having immunity)
     ask one-of humans-here with [ infected? = false and recovered? = false ] [
       set infected? true
       set time-elapsed-before-bitten-by-infected ticks - time-became-susceptible
@@ -292,8 +299,8 @@ GRAPHICS-WINDOW
 16
 -16
 16
-0
-0
+1
+1
 1
 ticks
 30.0
@@ -341,7 +348,7 @@ bias
 bias
 0
 1
-0.45
+0.2
 0.05
 1
 NIL
@@ -373,8 +380,8 @@ SLIDER
 num-of-individuals
 num-of-individuals
 1
-1000
-500.0
+200
+200.0
 1
 1
 NIL
@@ -388,8 +395,8 @@ SLIDER
 num-of-mosquitoes
 num-of-mosquitoes
 1
-100
-50.0
+200
+200.0
 1
 1
 NIL
@@ -404,7 +411,7 @@ SLIDER
 %-of-infected-at-start
 0
 100
-4.0
+10.0
 1
 1
 NIL
@@ -500,7 +507,7 @@ human-attractiveness
 human-attractiveness
 0
 1
-0.5
+0.2
 0.05
 1
 NIL
@@ -590,39 +597,26 @@ max-time-before-biting-infected
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+This is a simple model with Mosquito and Human as agents. It includes two aspects of viral propagation in vector borne diseases, viz. the mosquito's attractiveness to human in general and further preferential attractiveness to infected hosts. 
 
 ## HOW IT WORKS
-
-(what rules the agents use to create the overall behavior of the model)
+In every tick, the mosquitoes and humans can move one step. Human agents can move in any direction randomly, while the direction of mosquito depend on attractiveness and bias ( preferential attractiveness to infected hosts) parameter values. When an uninfected mosquito share a patch with an infected host, the mosquito is inoculated with the virus and its state changes to incubation stage. After incubation time is finished, the mosquito will change to a carrier state and can infect an uninfected human. The mosquito remains to be in carrier state for its lifetime and after its lifetime (given by average carrier time), the mosquito changes to initial uninfected state, representing replacement of previous mosquito by a newly born one. When a human agent is infected by biting of carrier mosquito, its state converts to infected stage and is sick for a period of time. After the sick time is over, the individual can no longer transmit the virus to another mosquito and can not get re-infected for a period of time. 
 
 ## HOW TO USE IT
 
-(how to use the model, including a description of each of the items in the Interface tab)
+Set the num-of-mosquitoes, number-of-individuals and %-of-infected-at-start. The 'human-attractiveness' and 'bias' parameters can be set between 0 to 1. 
 
-## THINGS TO NOTICE
-
-(suggested things for the user to notice while running the model)
+Click on the SETUP button to set up the world with Mosquito and Human. Click on GO to start the model. The human and mosquitoes can wrap around the world as they move across the boundaries. 
 
 ## THINGS TO TRY
+Set num-of-individuals = 100, num-of-mosquitoes = 100 and %-of-infected-at-start = 10
 
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+Set different values for attractiveness and bias and RUN the model. Try out with human-attractiveness = 0.2 or 0.6 or 1.0​ and bias = 0.0 or 0.2 or 0.6 or 1.0​.
 
-## EXTENDING THE MODEL
-
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
-
-## NETLOGO FEATURES
-
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
-
-## RELATED MODELS
-
-(models in the NetLogo Models Library and elsewhere which are of related interest)
 
 ## CREDITS AND REFERENCES
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+https://github.com/ishworthapa/biasInfectionModel
 @#$#@#$#@
 default
 true
@@ -929,12 +923,12 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.2.2
+NetLogo 6.3.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="experiment3_5pcMosquito_rs_pcInfection_100rep" repetitions="100" runMetricsEveryStep="false">
+  <experiment name="experiment3_100H200M_rs_pcInfection_100rep" repetitions="100" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="2000"/>
@@ -948,10 +942,10 @@ NetLogo 6.2.2
     <metric>median-time-before-bitten-by-infected</metric>
     <metric>mean-time-before-bitten-by-infected</metric>
     <enumeratedValueSet variable="num-of-individuals">
-      <value value="500"/>
+      <value value="100"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="num-of-mosquitoes">
-      <value value="25"/>
+      <value value="200"/>
     </enumeratedValueSet>
     <steppedValueSet variable="%-of-infected-at-start" first="2" step="4" last="30"/>
     <steppedValueSet variable="bias" first="0" step="0.1" last="1"/>
@@ -1000,6 +994,255 @@ NetLogo 6.2.2
       <value value="21"/>
     </enumeratedValueSet>
     <steppedValueSet variable="human-attractiveness" first="0" step="0.1" last="1"/>
+    <enumeratedValueSet variable="average-incubation-time">
+      <value value="7"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment3_100H50M_rs_pcInfection_100rep" repetitions="100" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>count infected-humans</metric>
+    <metric>count carrier-mosquitoes</metric>
+    <metric>count exposed-mosquitoes</metric>
+    <metric>max-time-before-biting-infected</metric>
+    <metric>min-time-before-biting-infected</metric>
+    <metric>mean-time-before-biting-infected</metric>
+    <metric>median-time-before-biting-infected</metric>
+    <metric>median-time-before-bitten-by-infected</metric>
+    <metric>mean-time-before-bitten-by-infected</metric>
+    <enumeratedValueSet variable="num-of-individuals">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="num-of-mosquitoes">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="%-of-infected-at-start" first="2" step="4" last="30"/>
+    <steppedValueSet variable="bias" first="0" step="0.1" last="1"/>
+    <enumeratedValueSet variable="average-sick-time">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="average-recovery-time">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="average-carrier-time">
+      <value value="21"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="human-attractiveness" first="0" step="0.1" last="1"/>
+    <enumeratedValueSet variable="average-incubation-time">
+      <value value="7"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment3_100H100M_rs_pcInfection_100rep" repetitions="100" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>count infected-humans</metric>
+    <metric>count carrier-mosquitoes</metric>
+    <metric>count exposed-mosquitoes</metric>
+    <metric>max-time-before-biting-infected</metric>
+    <metric>min-time-before-biting-infected</metric>
+    <metric>mean-time-before-biting-infected</metric>
+    <metric>median-time-before-biting-infected</metric>
+    <metric>median-time-before-bitten-by-infected</metric>
+    <metric>mean-time-before-bitten-by-infected</metric>
+    <enumeratedValueSet variable="num-of-individuals">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="num-of-mosquitoes">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="%-of-infected-at-start" first="2" step="4" last="30"/>
+    <steppedValueSet variable="bias" first="0" step="0.1" last="1"/>
+    <enumeratedValueSet variable="average-sick-time">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="average-recovery-time">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="average-carrier-time">
+      <value value="21"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="human-attractiveness" first="0" step="0.1" last="1"/>
+    <enumeratedValueSet variable="average-incubation-time">
+      <value value="7"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment3_200H200M_rs_pcInfection_100rep" repetitions="100" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>count infected-humans</metric>
+    <metric>count carrier-mosquitoes</metric>
+    <metric>count exposed-mosquitoes</metric>
+    <metric>max-time-before-biting-infected</metric>
+    <metric>min-time-before-biting-infected</metric>
+    <metric>mean-time-before-biting-infected</metric>
+    <metric>median-time-before-biting-infected</metric>
+    <metric>median-time-before-bitten-by-infected</metric>
+    <metric>mean-time-before-bitten-by-infected</metric>
+    <enumeratedValueSet variable="num-of-individuals">
+      <value value="200"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="num-of-mosquitoes">
+      <value value="200"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="%-of-infected-at-start" first="2" step="4" last="30"/>
+    <steppedValueSet variable="bias" first="0" step="0.1" last="1"/>
+    <enumeratedValueSet variable="average-sick-time">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="average-recovery-time">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="average-carrier-time">
+      <value value="21"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="human-attractiveness" first="0" step="0.1" last="1"/>
+    <enumeratedValueSet variable="average-incubation-time">
+      <value value="7"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment3_200H400M_rs_pcInfection_100rep" repetitions="100" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>count infected-humans</metric>
+    <metric>count carrier-mosquitoes</metric>
+    <metric>count exposed-mosquitoes</metric>
+    <metric>max-time-before-biting-infected</metric>
+    <metric>min-time-before-biting-infected</metric>
+    <metric>mean-time-before-biting-infected</metric>
+    <metric>median-time-before-biting-infected</metric>
+    <metric>median-time-before-bitten-by-infected</metric>
+    <metric>mean-time-before-bitten-by-infected</metric>
+    <enumeratedValueSet variable="num-of-individuals">
+      <value value="200"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="num-of-mosquitoes">
+      <value value="400"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="%-of-infected-at-start" first="2" step="4" last="30"/>
+    <steppedValueSet variable="bias" first="0" step="0.1" last="1"/>
+    <enumeratedValueSet variable="average-sick-time">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="average-recovery-time">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="average-carrier-time">
+      <value value="21"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="human-attractiveness" first="0" step="0.1" last="1"/>
+    <enumeratedValueSet variable="average-incubation-time">
+      <value value="7"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment3_100H100M_rs_10pcInfection_100rep" repetitions="100" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>count infected-humans</metric>
+    <metric>count carrier-mosquitoes</metric>
+    <metric>count exposed-mosquitoes</metric>
+    <metric>max-time-before-biting-infected</metric>
+    <metric>min-time-before-biting-infected</metric>
+    <metric>mean-time-before-biting-infected</metric>
+    <metric>median-time-before-biting-infected</metric>
+    <metric>median-time-before-bitten-by-infected</metric>
+    <metric>mean-time-before-bitten-by-infected</metric>
+    <enumeratedValueSet variable="num-of-individuals">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="num-of-mosquitoes">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="%-of-infected-at-start">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="bias" first="0" step="0.1" last="1"/>
+    <enumeratedValueSet variable="average-sick-time">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="average-recovery-time">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="average-carrier-time">
+      <value value="21"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="human-attractiveness" first="0" step="0.1" last="1"/>
+    <enumeratedValueSet variable="average-incubation-time">
+      <value value="7"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment3_100H100M_rs_pcInfection_100rep" repetitions="100" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>count infected-humans</metric>
+    <metric>count carrier-mosquitoes</metric>
+    <metric>count exposed-mosquitoes</metric>
+    <metric>max-time-before-biting-infected</metric>
+    <metric>min-time-before-biting-infected</metric>
+    <metric>mean-time-before-biting-infected</metric>
+    <metric>median-time-before-biting-infected</metric>
+    <metric>median-time-before-bitten-by-infected</metric>
+    <metric>mean-time-before-bitten-by-infected</metric>
+    <enumeratedValueSet variable="num-of-individuals">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="num-of-mosquitoes">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="%-of-infected-at-start" first="2" step="4" last="30"/>
+    <steppedValueSet variable="bias" first="0" step="0.1" last="1"/>
+    <enumeratedValueSet variable="average-sick-time">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="average-recovery-time">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="average-carrier-time">
+      <value value="21"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="human-attractiveness" first="0" step="0.1" last="1"/>
+    <enumeratedValueSet variable="average-incubation-time">
+      <value value="7"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment3_100H100M_rs_10pc0.9BHInfection_100rep" repetitions="100" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>count infected-humans</metric>
+    <metric>count carrier-mosquitoes</metric>
+    <metric>count exposed-mosquitoes</metric>
+    <metric>max-time-before-biting-infected</metric>
+    <metric>min-time-before-biting-infected</metric>
+    <metric>mean-time-before-biting-infected</metric>
+    <metric>median-time-before-biting-infected</metric>
+    <metric>median-time-before-bitten-by-infected</metric>
+    <metric>mean-time-before-bitten-by-infected</metric>
+    <enumeratedValueSet variable="num-of-individuals">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="num-of-mosquitoes">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="%-of-infected-at-start">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="bias" first="0.9" step="0.01" last="1"/>
+    <enumeratedValueSet variable="average-sick-time">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="average-recovery-time">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="average-carrier-time">
+      <value value="21"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="human-attractiveness" first="0.9" step="0.01" last="1"/>
     <enumeratedValueSet variable="average-incubation-time">
       <value value="7"/>
     </enumeratedValueSet>
