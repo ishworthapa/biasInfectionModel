@@ -348,7 +348,7 @@ bias
 bias
 0
 1
-0.2
+0.0
 0.05
 1
 NIL
@@ -381,7 +381,7 @@ num-of-individuals
 num-of-individuals
 1
 200
-200.0
+100.0
 1
 1
 NIL
@@ -396,7 +396,7 @@ num-of-mosquitoes
 num-of-mosquitoes
 1
 200
-200.0
+100.0
 1
 1
 NIL
